@@ -1,10 +1,9 @@
 package br.com.fiap.semfome.controllers;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,66 +13,71 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.fiap.semfome.exceptions.RestNotFoundException;
 import br.com.fiap.semfome.model.Alimento;
 import br.com.fiap.semfome.repository.AlimentoRepository;
+import br.com.fiap.semfome.repository.EmpresaRepository;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/alimentos")
+@Slf4j
 public class AlimentoController {
     
-    Logger log = LoggerFactory.getLogger(AlimentoController.class);
+    @Autowired
+    AlimentoRepository alimentoRepository;
 
     @Autowired
-    AlimentoRepository repository;
+    EmpresaRepository empresaRepository;
 
     @GetMapping
-    public  List<Alimento> index(){
-        return repository.findAll();
+    public Page<Alimento> index(@RequestParam(required = false) String busca, @PageableDefault(size = 10) Pageable pageable){
+        if(busca == null) return alimentoRepository.findAll(pageable);
+        return alimentoRepository.findByNomeContaining(busca, pageable);
     }
 
     @PostMapping
-    public ResponseEntity<Alimento> create(@RequestBody Alimento alimento) {
+    public ResponseEntity<Object> create(@RequestBody @Valid Alimento alimento) {
         log.info("cadastrando alimento" + alimento);
-        repository.save(alimento);
+        alimentoRepository.save(alimento);
+        alimento.setEmpresa(empresaRepository.findById(alimento.getEmpresa().getId()).get());
         return ResponseEntity.status(HttpStatus.CREATED).body(alimento);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<Alimento> show(@PathVariable Long id){
         log.info("detalhando alimento" + id);
-        var alimentoEncontrado = repository.findById(id);
 
-        if(alimentoEncontrado.isEmpty())
-            return ResponseEntity.notFound().build();
+        var alimento = alimentoRepository.findById(id)
+            .orElseThrow(() -> new RestNotFoundException("alimento não encontrado!"));
 
-        return ResponseEntity.ok(alimentoEncontrado.get());
+        return ResponseEntity.ok(alimento);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Alimento> destroy(@PathVariable Long id){
         log.info("apagando alimento" + id);
-        var alimentoEncontrado = repository.findById(id);
+        var alimento = alimentoRepository.findById(id)
+            .orElseThrow(() -> new RestNotFoundException("alimento não encontrado!"));
 
-        if (alimentoEncontrado.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        repository.delete(alimentoEncontrado.get());
+        alimentoRepository.delete(alimento);
 
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Alimento> update(@PathVariable Long id, @RequestBody Alimento alimento){
+    public ResponseEntity<Alimento> update(@PathVariable Long id, @RequestBody @Valid Alimento alimento){
         log.info("alterando alimento" + id);
-        var alimentoEncontrado = repository.findById(id);
 
-        if (alimentoEncontrado.isEmpty())
-            return ResponseEntity.notFound().build();
+        alimentoRepository.findById(id)
+            .orElseThrow(() -> new RestNotFoundException("alimento não encontrado!"));
 
         alimento.setId(id);
-        repository.save(alimento);
+        alimentoRepository.save(alimento);
 
         return ResponseEntity.ok(alimento);
     }
