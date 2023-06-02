@@ -18,14 +18,11 @@ import br.com.fiap.semfome.repository.UsuarioRepository;
 @Service
 public class TokenJwtService {
 
-    @Value("${jwt.secret}")
-    String secret;
-
     @Autowired
     UsuarioRepository repository;
 
     public JwtToken generateToken(Credencial credencial){
-        Algorithm alg = Algorithm.HMAC256(secret);
+        Algorithm alg = Algorithm.HMAC256("secret");
 
         var token = JWT.create()
             .withExpiresAt(Instant.now().plus(2, ChronoUnit.HOURS))
@@ -37,7 +34,7 @@ public class TokenJwtService {
     }
 
     public Usuario validate(String token){
-        Algorithm alg = Algorithm.HMAC256(secret);
+        Algorithm alg = Algorithm.HMAC256("secret");
         var email = JWT.require(alg)
             .withIssuer("SemFome")
             .build()

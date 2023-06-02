@@ -72,7 +72,7 @@ public class Alimento {
         name = "id_empresa",
         referencedColumnName = "id_empresa",
         foreignKey = @ForeignKey(name ="fk_alimento_empresa")
-)
+    )
     private Empresa empresa;
 
     public EntityModel<Alimento> toEntityModel(){
