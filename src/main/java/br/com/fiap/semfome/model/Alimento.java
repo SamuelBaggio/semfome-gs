@@ -5,11 +5,15 @@ import org.springframework.hateoas.EntityModel;
 
 import br.com.fiap.semfome.controllers.AlimentoController;
 import br.com.fiap.semfome.controllers.EmpresaController;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -63,7 +67,12 @@ public class Alimento {
     // @ManyToOne
     // private Usuario usuario;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH})
+    @JoinColumn(
+        name = "id_empresa",
+        referencedColumnName = "id_empresa",
+        foreignKey = @ForeignKey(name ="fk_alimento_empresa")
+)
     private Empresa empresa;
 
     public EntityModel<Alimento> toEntityModel(){
