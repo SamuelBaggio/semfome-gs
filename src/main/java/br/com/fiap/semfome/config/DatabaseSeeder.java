@@ -5,11 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.com.fiap.semfome.model.Alimento;
 import br.com.fiap.semfome.model.Empresa;
+import br.com.fiap.semfome.model.Usuario;
 import br.com.fiap.semfome.repository.AlimentoRepository;
 import br.com.fiap.semfome.repository.EmpresaRepository;
+import br.com.fiap.semfome.repository.UsuarioRepository;
 
 @Configuration
 public class DatabaseSeeder implements CommandLineRunner {
@@ -19,6 +22,12 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Autowired
     AlimentoRepository alimentoRepository;
+
+    @Autowired
+    UsuarioRepository usuarioRepository;
+
+    @Autowired
+    PasswordEncoder encoder;
 
     @Override
     public void run(String... args) throws Exception {
@@ -63,6 +72,11 @@ public class DatabaseSeeder implements CommandLineRunner {
             Alimento.builder().nome("Pizza").descricao("De Calabresa").preco(10.0).empresa(u2).build(),
             Alimento.builder().nome("Almoço Completo").descricao("Arroz, Feijão, Mistura e Batata Frita").preco(10.0).empresa(u2).build()
         ));
+
+        usuarioRepository.save(Usuario.builder().nome("Samuel")
+            .email("samuel@fiap.com.br")
+            .senha(encoder.encode("123456"))
+            .build());
     }
 
 }
