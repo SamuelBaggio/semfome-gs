@@ -1,7 +1,5 @@
 package br.com.fiap.semfome.controllers;
 
-import javax.swing.text.html.parser.Entity;
-
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

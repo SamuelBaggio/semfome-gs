@@ -19,10 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.fiap.semfome.exceptions.RestNotFoundException;
 import br.com.fiap.semfome.model.Empresa;
 import br.com.fiap.semfome.repository.EmpresaRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/empresas")
+@SecurityRequirement(name = "bearer-key")
+@Tag(name="empresa")
 public class EmpresaController {
     
     Logger log = LoggerFactory.getLogger(getClass());
