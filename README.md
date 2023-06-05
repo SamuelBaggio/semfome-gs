@@ -19,12 +19,12 @@
 
 ````
 {
-	"nome": "Cenoura",
-	"descricao": "",
-	"preco": 2,
-	"empresa": {
-		"id": 1
-	}
+  "nome": "Cenoura",
+  "descricao": "",
+  "preco": 2,
+  "empresa": {
+    "id": 1
+  }
 }
 ````
 
